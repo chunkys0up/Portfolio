@@ -139,7 +139,7 @@ function Image_gallery() {
 
             percentage = Math.max(Math.min(percentage + delta, 0), -100);
 
-            animateToPosition(track);
+            applyPositionDirect(track);
 
             smoothedVelocity = smoothedVelocity * 0.7 + delta * 0.3;
         };
