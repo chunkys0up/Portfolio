@@ -56,8 +56,8 @@ body.gallery-layout {
 }
 
 #image-track > .image {
-    width: 40vmin;
-    height: 56vmin;
+    width: 36vmin;
+    height: 50vmin;
     object-fit: cover;
     object-position: 100% 50%;
     user-select: none;

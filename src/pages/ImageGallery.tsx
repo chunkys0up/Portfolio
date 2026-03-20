@@ -1,29 +1,92 @@
 import './../styles.css';
 import { useEffect } from 'react';
 
-function updateTrack(track: HTMLElement, percentage: number) {
-    track.animate(
-        { transform: `translate(${percentage}%, -50%)` },
-        { duration: 1200, fill: "forwards" }
-    );
+// --- Momentum state (scroll wheel only) ---
+let velocity = 0;
+let percentage = 0;
+let animating = false;
 
+const FRICTION = 0.95;
+const MIN_VELOCITY = 0.01;
+const SCROLL_SENSITIVITY = 0.25;
+const MAX_FLING_VELOCITY = 1.5;
+
+const DRAG_ANIMATE_MS = 1200;
+
+// --- Track running .animate() instances so we can kill them cleanly ---
+let runningAnimations: Animation[] = [];
+
+function commitAndCancelAnimations() {
+    for (const anim of runningAnimations) {
+        try {
+            anim.commitStyles();
+        } catch (_) { /* already finished or idle */ }
+        anim.cancel();
+    }
+    runningAnimations = [];
+}
+
+function applyPositionDirect(track: HTMLElement) {
+    // Kill any .animate() fills before writing inline styles — otherwise they fight
+    commitAndCancelAnimations();
+
+    track.style.transform = `translate(${percentage}%, -50%)`;
     for (const image of track.querySelectorAll<HTMLImageElement>(".image")) {
-        image.animate(
-            { objectPosition: `${percentage + 100}% 50%` },
-            { duration: 1200, fill: "forwards" }
-        );
+        image.style.objectPosition = `${percentage + 100}% 50%`;
     }
 }
 
+function animateToPosition(track: HTMLElement) {
+    // Commit previous .animate() so the new one starts from the right place
+    commitAndCancelAnimations();
+
+    const trackAnim = track.animate(
+        { transform: `translate(${percentage}%, -50%)` },
+        { duration: DRAG_ANIMATE_MS, fill: "forwards", easing: "ease-out" }
+    );
+
+    runningAnimations.push(trackAnim);
+
+    for (const image of track.querySelectorAll<HTMLImageElement>(".image")) {
+        const imgAnim = image.animate(
+            { objectPosition: `${percentage + 100}% 50%` },
+            { duration: DRAG_ANIMATE_MS, fill: "forwards", easing: "ease-out" }
+        );
+        runningAnimations.push(imgAnim);
+    }
+}
+
+// --- Scroll momentum (rAF, no .animate()) ---
+function tick(track: HTMLElement) {
+    velocity *= FRICTION;
+    percentage = Math.max(Math.min(percentage + velocity, 0), -100);
+
+    applyPositionDirect(track);
+
+    if (Math.abs(velocity) > MIN_VELOCITY && percentage > -100 && percentage < 0) {
+        requestAnimationFrame(() => tick(track));
+    } else {
+        animating = false;
+        percentage = Math.max(Math.min(percentage, 0), -100);
+    }
+}
+
+function startMomentum(track: HTMLElement) {
+    if (animating) return;
+    animating = true;
+    requestAnimationFrame(() => tick(track));
+}
+
 function handleScroll(e: WheelEvent) {
+    e.preventDefault();
     const track = document.getElementById("image-track");
     if (!track) return;
 
-    const scrollAmt = e.deltaY;
-    const prevPercentage = parseFloat(track.dataset.prevPercentage ?? "0");
-    const percentage = Math.max(Math.min((prevPercentage + scrollAmt) * -100, 0), -100);
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    velocity -= delta * SCROLL_SENSITIVITY * 0.01;
+    velocity = Math.max(-MAX_FLING_VELOCITY, Math.min(velocity, MAX_FLING_VELOCITY));
 
-    updateTrack(track, percentage);
+    startMomentum(track);
 }
 
 function Image_gallery() {
@@ -33,48 +96,76 @@ function Image_gallery() {
         const track = document.getElementById("image-track");
         if (!track) return;
 
-        // SCROLL WHEEL MOVEMENT
-        track?.addEventListener("wheel", handleScroll);
+        velocity = 0;
+        percentage = 0;
+        animating = false;
+        runningAnimations = [];
+
+        window.addEventListener("wheel", handleScroll, { passive: false });
+
+        let dragging = false;
+        let lastX = 0;
+        let smoothedVelocity = 0;
 
         window.onmousedown = (e: MouseEvent) => {
-            track.dataset.mouseDownAt = e.clientX.toString();
+            dragging = true;
+            lastX = e.clientX;
+            smoothedVelocity = 0;
+
+            // Stop any ongoing scroll momentum so drag takes over cleanly
+            velocity = 0;
+            animating = false;
         };
 
         window.onmouseup = () => {
-            track.dataset.mouseDownAt = "0";
-            track.dataset.prevPercentage = track.dataset.percentage ?? "0";
+            if (!dragging) return;
+            dragging = false;
+
+            // Commit drag animations before switching to momentum
+            commitAndCancelAnimations();
+
+            velocity = Math.max(-MAX_FLING_VELOCITY, Math.min(smoothedVelocity, MAX_FLING_VELOCITY));
+            startMomentum(track);
         };
 
         window.onmousemove = (e: MouseEvent) => {
-            if (track.dataset.mouseDownAt === "0") return;
+            if (!dragging) return;
 
-            const mouseDelta = parseFloat(track.dataset.mouseDownAt!) - e.clientX;
-            const maxDelta = window.innerWidth / 2;
-            const prevPercentage = parseFloat(track.dataset.prevPercentage ?? "0");
-            const percentage = Math.max(Math.min(prevPercentage + (mouseDelta / maxDelta) * -100, 0), -100);
+            const dx = e.clientX - lastX;
+            lastX = e.clientX;
 
-            track.dataset.percentage = percentage.toString();
+            const trackWidth = track.scrollWidth;
+            const delta = (dx / trackWidth) * 100;
 
-            updateTrack(track as HTMLDivElement, percentage);
+            percentage = Math.max(Math.min(percentage + delta, 0), -100);
+
+            animateToPosition(track);
+
+            smoothedVelocity = smoothedVelocity * 0.7 + delta * 0.3;
         };
-
 
         return () => {
             document.body.className = "";
+            window.removeEventListener("wheel", handleScroll);
             window.onmousedown = null;
             window.onmouseup = null;
             window.onmousemove = null;
+            velocity = 0;
+            animating = false;
+            commitAndCancelAnimations();
         };
     }, []);
 
     return (
         <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
             <img className="image" src="https://plus.unsplash.com/premium_photo-1681412205156-bb506a4ea970?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDl8TThqVmJMYlRSd3N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
-            <img className="image" src="https://plus.unsplash.com/premium_photo-1755856680228-60755545c4ec?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE3fHRvd0paRnNrcEdnfHxlbnwwfHx8fHw%3D" draggable="false" />
+            <img className="image" src="https://images.unsplash.com/photo-1772475385350-d130ebe22bf5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDkzfE04alZiTGJUUndzfHxlbnwwfHx8fHw%3D" draggable="false" />
             <img className="image" src="https://images.unsplash.com/photo-1771150473820-37128024ac31?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDN8eEh4WVRNSExnT2N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
-            <img className="image" src="https://images.unsplash.com/photo-1773167558749-ab4443c75f37?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw4M3x8fGVufDB8fHx8fA%3D%3D" draggable="false" />
+            <img className="image" src="https://images.unsplash.com/photo-1773060897328-9091387ec521?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1fHx8ZW58MHx8fHx8" draggable="false" />
             <img className="image" src="https://images.unsplash.com/photo-1772733694354-3b4a33568ef4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDc2fDZzTVZqVExTa2VRfHxlbnwwfHx8fHw%3D" draggable="false" />
             <img className="image" src="https://plus.unsplash.com/premium_photo-1741805870438-457e1b6eaa39?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMDR8fHxlbnwwfHx8fHw%3D" draggable="false" />
+            <img className="image" src="https://plus.unsplash.com/premium_photo-1675714692786-22ad175c9a76?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDc4fDZzTVZqVExTa2VRfHxlbnwwfHx8fHw%3D" draggable="false" />
+            <img className="image" src="https://images.unsplash.com/photo-1773904215693-934764345e52?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8eEh4WVRNSExnT2N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
         </div>
     );
 }
