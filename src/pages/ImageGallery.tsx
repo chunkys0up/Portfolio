@@ -11,52 +11,13 @@ const MIN_VELOCITY = 0.01;
 const SCROLL_SENSITIVITY = 0.25;
 const MAX_FLING_VELOCITY = 1.5;
 
-const DRAG_ANIMATE_MS = 1200;
-
-// --- Track running .animate() instances so we can kill them cleanly ---
-let runningAnimations: Animation[] = [];
-
-function commitAndCancelAnimations() {
-    for (const anim of runningAnimations) {
-        try {
-            anim.commitStyles();
-        } catch (_) { /* already finished or idle */ }
-        anim.cancel();
-    }
-    runningAnimations = [];
-}
-
 function applyPositionDirect(track: HTMLElement) {
-    // Kill any .animate() fills before writing inline styles — otherwise they fight
-    commitAndCancelAnimations();
-
     track.style.transform = `translate(${percentage}%, -50%)`;
     for (const image of track.querySelectorAll<HTMLImageElement>(".image")) {
         image.style.objectPosition = `${percentage + 100}% 50%`;
     }
 }
 
-function animateToPosition(track: HTMLElement) {
-    // Commit previous .animate() so the new one starts from the right place
-    commitAndCancelAnimations();
-
-    const trackAnim = track.animate(
-        { transform: `translate(${percentage}%, -50%)` },
-        { duration: DRAG_ANIMATE_MS, fill: "forwards", easing: "ease-out" }
-    );
-
-    runningAnimations.push(trackAnim);
-
-    for (const image of track.querySelectorAll<HTMLImageElement>(".image")) {
-        const imgAnim = image.animate(
-            { objectPosition: `${percentage + 100}% 50%` },
-            { duration: DRAG_ANIMATE_MS, fill: "forwards", easing: "ease-out" }
-        );
-        runningAnimations.push(imgAnim);
-    }
-}
-
-// --- Scroll momentum (rAF, no .animate()) ---
 function tick(track: HTMLElement) {
     velocity *= FRICTION;
     percentage = Math.max(Math.min(percentage + velocity, 0), -100);
@@ -67,7 +28,6 @@ function tick(track: HTMLElement) {
         requestAnimationFrame(() => tick(track));
     } else {
         animating = false;
-        percentage = Math.max(Math.min(percentage, 0), -100);
     }
 }
 
@@ -99,7 +59,6 @@ function Image_gallery() {
         velocity = 0;
         percentage = 0;
         animating = false;
-        runningAnimations = [];
 
         window.addEventListener("wheel", handleScroll, { passive: false });
 
@@ -121,9 +80,6 @@ function Image_gallery() {
             if (!dragging) return;
             dragging = false;
 
-            // Commit drag animations before switching to momentum
-            commitAndCancelAnimations();
-
             velocity = Math.max(-MAX_FLING_VELOCITY, Math.min(smoothedVelocity, MAX_FLING_VELOCITY));
             startMomentum(track);
         };
@@ -135,7 +91,7 @@ function Image_gallery() {
             lastX = e.clientX;
 
             const trackWidth = track.scrollWidth;
-            const delta = (dx / trackWidth) * 100;
+            const delta = (dx / trackWidth) * 100 * 1.5;
 
             percentage = Math.max(Math.min(percentage + delta, 0), -100);
 
@@ -152,7 +108,6 @@ function Image_gallery() {
             window.onmousemove = null;
             velocity = 0;
             animating = false;
-            commitAndCancelAnimations();
         };
     }, []);
 
