@@ -1,12 +1,40 @@
 import './../styles.css';
 import { useEffect } from 'react';
 
+function updateTrack(track: HTMLElement, percentage: number) {
+    track.animate(
+        { transform: `translate(${percentage}%, -50%)` },
+        { duration: 1200, fill: "forwards" }
+    );
+
+    for (const image of track.querySelectorAll<HTMLImageElement>(".image")) {
+        image.animate(
+            { objectPosition: `${percentage + 100}% 50%` },
+            { duration: 1200, fill: "forwards" }
+        );
+    }
+}
+
+function handleScroll(e: WheelEvent) {
+    const track = document.getElementById("image-track");
+    if (!track) return;
+
+    const scrollAmt = e.deltaY;
+    const prevPercentage = parseFloat(track.dataset.prevPercentage ?? "0");
+    const percentage = Math.max(Math.min((prevPercentage + scrollAmt) * -100, 0), -100);
+
+    updateTrack(track, percentage);
+}
+
 function Image_gallery() {
     useEffect(() => {
         document.body.className = "gallery-layout";
 
         const track = document.getElementById("image-track");
         if (!track) return;
+
+        // SCROLL WHEEL MOVEMENT
+        track?.addEventListener("wheel", handleScroll);
 
         window.onmousedown = (e: MouseEvent) => {
             track.dataset.mouseDownAt = e.clientX.toString();
@@ -27,18 +55,9 @@ function Image_gallery() {
 
             track.dataset.percentage = percentage.toString();
 
-            track.animate(
-                { transform: `translate(${percentage}%, -50%)` },
-                { duration: 1200, fill: "forwards" }
-            );
-
-            for (const image of track.querySelectorAll<HTMLImageElement>(".image")) {
-                image.animate(
-                    { objectPosition: `${percentage + 100}% 50%` },
-                    { duration: 1200, fill: "forwards" }
-                );
-            }
+            updateTrack(track as HTMLDivElement, percentage);
         };
+
 
         return () => {
             document.body.className = "";
@@ -47,8 +66,9 @@ function Image_gallery() {
             window.onmousemove = null;
         };
     }, []);
+
     return (
-        <div id="image-track" data-mouse-down-at="0">
+        <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
             <img className="image" src="https://plus.unsplash.com/premium_photo-1681412205156-bb506a4ea970?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDl8TThqVmJMYlRSd3N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
             <img className="image" src="https://plus.unsplash.com/premium_photo-1755856680228-60755545c4ec?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDE3fHRvd0paRnNrcEdnfHxlbnwwfHx8fHw%3D" draggable="false" />
             <img className="image" src="https://images.unsplash.com/photo-1771150473820-37128024ac31?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDN8eEh4WVRNSExnT2N8fGVufDB8fHx8fA%3D%3D" draggable="false" />

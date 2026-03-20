@@ -45,7 +45,7 @@ body.portfolio-layout {
 
 
 /*
- * IMAGE GALLERY
+ * IMAGE GALLERY HORIZONTAL
  * */
 
 body.gallery-layout {
@@ -66,8 +66,14 @@ body.gallery-layout {
 #image-track {
     display: flex;
     gap: 4vmin;
-    position: absolute;  /* In document flow */
+    position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(0%, -50%);
 }
+
+/*
+ * VERTICAL IMAGE GALLERY
+ * */
+
+
