@@ -66,7 +66,7 @@ function Image_gallery() {
         let lastX = 0;
         let smoothedVelocity = 0;
 
-        window.onmousedown = (e: MouseEvent) => {
+        window.onpointerdown = (e: MouseEvent) => {
             dragging = true;
             lastX = e.clientX;
             smoothedVelocity = 0;
@@ -76,7 +76,7 @@ function Image_gallery() {
             animating = false;
         };
 
-        window.onmouseup = () => {
+        window.onpointerup = () => {
             if (!dragging) return;
             dragging = false;
 
@@ -84,7 +84,7 @@ function Image_gallery() {
             startMomentum(track);
         };
 
-        window.onmousemove = (e: MouseEvent) => {
+        window.onpointermove = (e: MouseEvent) => {
             if (!dragging) return;
 
             const dx = e.clientX - lastX;
@@ -103,9 +103,9 @@ function Image_gallery() {
         return () => {
             document.body.className = "";
             window.removeEventListener("wheel", handleScroll);
-            window.onmousedown = null;
-            window.onmouseup = null;
-            window.onmousemove = null;
+            window.onpointerdown = null;
+            window.onpointerup = null;
+            window.onpointermove = null;
             velocity = 0;
             animating = false;
         };

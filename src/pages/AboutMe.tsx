@@ -1,4 +1,4 @@
-import { projects, type Project } from "../components/DataTypes";
+import { projects, type CardData } from "../components/DataTypes";
 import ExperienceCard from "../components/ExperienceCard";
 
 function AboutMe() {
@@ -17,8 +17,8 @@ function AboutMe() {
 
             <section>
                 <p className="section-title">Projects</p>
-                {projects.map((p: Project) => (
-                    <ExperienceCard key={p.link} project={p} />
+                {projects.map((p: CardData) => (
+                    <ExperienceCard key={p.link} card={p} />
                 ))}
             </section>
         </div>

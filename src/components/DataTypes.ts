@@ -1,11 +1,11 @@
-export interface Project {
+export interface CardData {
   title: string;
   date: string;
   image: string;
   link: string;
 }
 
-export const projects: Project[] = [
+export const projects: CardData[] = [
   {
     title: "Obsidian File Preview Search",
     date: "2025-2026",

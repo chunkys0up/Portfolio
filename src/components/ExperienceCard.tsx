@@ -1,13 +1,13 @@
-import type { Project } from "./DataTypes";
+import type { CardData } from "./DataTypes";
 
-export default function ExperienceCard({ project }: { project: Project }) {
+export default function ExperienceCard({ card }: { card: CardData }) {
     return (
         <div className="card">
-            <p className="card-column">{project.date}</p>
+            <p className="card-column">{card.date}</p>
             <div className="card-col">
-                <a href={project.link} className="card-link" target="_blank">{project.title}</a>
+                <a href={card.link} className="card-link" target="_blank">{card.title}</a>
                 <p className="card-description">description</p>
-                {project.image && <img className="card-thumbnail" src={project.image} alt={project.title} />}
+                {card.image && <img className="card-thumbnail" src={card.image} alt={card.title} />}
             </div>
         </div>
     );
