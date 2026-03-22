@@ -9,7 +9,7 @@ export const projects: Project[] = [
   {
     title: "Obsidian File Preview Search",
     date: "2025-2026",
-    image: "/thumbnails/note-glance.png",
+    image: "",
     link: "https://github.com/chunkys0up/note-glance",
   },
   {
@@ -33,13 +33,13 @@ export const projects: Project[] = [
   {
     title: "Web Crawler",
     date: "2025",
-    image: "NA",
+    image: "",
     link: "https://github.com/chunkys0up/Web-Crawler",
   },
   {
     title: "Redis from Scratch",
     date: "2025",
-    image: "/thumbnails/redis-from-scratch.png",
+    image: "",
     link: "https://github.com/chunkys0up/Redis-from-scratch",
   },
 ];

@@ -27,7 +27,11 @@ nav {
 nav a {
   text-decoration: none;
   color: inherit;
-  padding: 0.5rem 0; /* clickable area without looking like a button */
+  padding: 0.5rem 0;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 body {
@@ -73,7 +77,7 @@ body.portfolio-layout {
 }
 
 /*
- * PROJECTS
+ * CARD COMPONENT CSS
  * */
 .card {
   display: flex;
@@ -94,21 +98,29 @@ body.portfolio-layout {
   color: inherit;
 }
 
-.date-column {
+.card-column {
   width: 12ch;
   flex-shrink: 0;
   color: oklch(0.55 0 0);
 }
 
-.project-card-col {
+.card-col {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.project-description {
+.card-description {
   color: oklch(0.55 0 0);
 }
+
+.card-thumbnail {
+  width: 180px;
+  height: 108px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
 /*
  * IMAGE GALLERY HORIZONTAL
  * */
