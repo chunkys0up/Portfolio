@@ -1,98 +1,149 @@
 /*
  * DEFAULT */
 @font-face {
-    font-family: 'inter';
-    src: url('./src/fonts/Inter-VariableFont_opsz,wght.ttf');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
+  font-family: "inter";
+  src: url("./src/fonts/Inter-VariableFont_opsz,wght.ttf");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 nav {
-background-color: blue;
-display: flex;
-gap: 2rem; /* spacing between links */
+  position: fixed;
+  top: 35px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  z-index: 1000;
 }
-
 nav a {
-text-decoration: none;
-color: inherit;
-padding: 0.5rem 0; /* clickable area without looking like a button */
+  text-decoration: none;
+  color: inherit;
+  padding: 0.5rem 0; /* clickable area without looking like a button */
 }
 
 body {
-    font-family: 'inter', sans-serif;
-    font-weight: 400;
-    margin: 0;
-    width: 100vw;
-    height: 100vh;
+  font-family: "inter", sans-serif;
+  font-weight: 400;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
 /*
- * MAIN PAGE
+ * ABOUT ME PAGE
  * */
 * {
   box-sizing: border-box;
 }
 
 section {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.sub-section {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: oklch(0.55 0 0);
 }
 
 body.portfolio-layout {
 }
 
 .portfolio-container {
-    width: 100%;
-    padding: 50px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 40px 50px;
+  text-align: left;
 }
 
-.icons {
-    margin-bottom: 20px;
+/*
+ * PROJECTS
+ * */
+.card {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
-.tools-list {
-    background-color: green;
+.card p,
+.card a {
+  margin: 0;
 }
 
+.card-link,
+.card-link:visited {
+  text-decoration: none;
+  color: inherit;
+}
 
+.date-column {
+  width: 12ch;
+  flex-shrink: 0;
+  color: oklch(0.55 0 0);
+}
+
+.project-card-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.project-description {
+  color: oklch(0.55 0 0);
+}
 /*
  * IMAGE GALLERY HORIZONTAL
  * */
 
 body.gallery-layout {
-    height: 100vh;
-    width: 100vw;
-    margin: 0rem;
-    overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  margin: 0rem;
+  overflow: hidden;
 }
 
 #image-track > .image {
-    width: 36vmin;
-    height: 50vmin;
-    object-fit: cover;
-    object-position: 100% 50%;
-    user-select: none;
+  width: 36vmin;
+  height: 50vmin;
+  object-fit: cover;
+  object-position: 100% 50%;
+  user-select: none;
 }
 
 #image-track {
-    display: flex;
-    gap: 4vmin;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(0%, -50%);
+  display: flex;
+  gap: 4vmin;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(0%, -50%);
+}
+
+.gallery-wrapper {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 /*
  * VERTICAL IMAGE GALLERY
  * */
-
-
