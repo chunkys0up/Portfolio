@@ -59,7 +59,7 @@ export const projects: CardData[] = [
   {
     title: "Cloud Metrics Dashboard",
     date: "2025",
-    image: "/thumbnails/cloud-metrics.png",
+    image: "/Portfolio/thumbnails/cloud-metrics.png",
     link: "https://github.com/chunkys0up/Cloud-Metrics-Dashboard",
     description:
       "Real time cloud monitoring dashboard with live metrics and historical analysis",
@@ -68,7 +68,7 @@ export const projects: CardData[] = [
   {
     title: "Track Site (Irvine Hacks 2026)",
     date: "2025",
-    image: "/thumbnails/track-site.jpg",
+    image: "/Portfolio/thumbnails/track-site.jpg",
     link: "https://devpost.com/software/track-site",
     description:
       "Lead a team to build vehicle telemetry dashboard, and integrated Arduino based censors to process real car data",
@@ -77,7 +77,7 @@ export const projects: CardData[] = [
   {
     title: "BiteSafe (BeacHacks 2025)",
     date: "2025",
-    image: "/thumbnails/bite-safe.jpg",
+    image: "/Portfolio/thumbnails/bite-safe.jpg",
     link: "https://devpost.com/software/bitesafe",
     description:
       "Co-developed a full stack mobile application to detect food allergens and recommend safe restaurants",
