@@ -178,7 +178,6 @@ body.gallery-layout {
   max-height: 90vh;
   object-fit: contain;
   border-radius: 12px;
-  border: 1px solid oklch(92.19% 0 0);
   animation: popIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
