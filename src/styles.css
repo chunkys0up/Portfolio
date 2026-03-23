@@ -73,7 +73,7 @@ body.portfolio-layout {
 .card {
   display: flex;
   align-items: baseline;
-  gap: 0;
+  gap: 1rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
@@ -161,6 +161,22 @@ body.gallery-layout {
   width: 100%;
   overflow: hidden;
   position: relative;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.overlay-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
 }
 
 /*

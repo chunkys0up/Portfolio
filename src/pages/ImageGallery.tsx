@@ -1,6 +1,6 @@
 import './../styles.css';
-import { useEffect } from 'react';
-
+import { useEffect, useState } from 'react';
+import { horizontalGallery } from '../components/DataTypes';
 // --- Momentum state (scroll wheel only) ---
 let velocity = 0;
 let percentage = 0;
@@ -50,7 +50,10 @@ function handleScroll(e: WheelEvent) {
 }
 
 function Image_gallery() {
+    const [selected, setSelected] = useState<string | null>(null);
+
     useEffect(() => {
+        document.title = "Gallery";
         document.body.className = "gallery-layout";
 
         const track = document.getElementById("image-track");
@@ -112,18 +115,20 @@ function Image_gallery() {
     }, []);
 
     return (
-        <div className="gallery-wrapper">
-            <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
-                <img className="image" src="https://plus.unsplash.com/premium_photo-1681412205156-bb506a4ea970?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDl8TThqVmJMYlRSd3N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
-                <img className="image" src="https://images.unsplash.com/photo-1772475385350-d130ebe22bf5?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDkzfE04alZiTGJUUndzfHxlbnwwfHx8fHw%3D" draggable="false" />
-                <img className="image" src="https://images.unsplash.com/photo-1771150473820-37128024ac31?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDN8eEh4WVRNSExnT2N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
-                <img className="image" src="https://images.unsplash.com/photo-1773060897328-9091387ec521?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw1fHx8ZW58MHx8fHx8" draggable="false" />
-                <img className="image" src="https://images.unsplash.com/photo-1772733694354-3b4a33568ef4?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDc2fDZzTVZqVExTa2VRfHxlbnwwfHx8fHw%3D" draggable="false" />
-                <img className="image" src="https://plus.unsplash.com/premium_photo-1741805870438-457e1b6eaa39?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMDR8fHxlbnwwfHx8fHw%3D" draggable="false" />
-                <img className="image" src="https://plus.unsplash.com/premium_photo-1675714692786-22ad175c9a76?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDc4fDZzTVZqVExTa2VRfHxlbnwwfHx8fHw%3D" draggable="false" />
-                <img className="image" src="https://images.unsplash.com/photo-1773904215693-934764345e52?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8eEh4WVRNSExnT2N8fGVufDB8fHx8fA%3D%3D" draggable="false" />
+        <>
+            {selected && (
+                <div className="overlay" onClick={() => setSelected(null)}>
+                    <img src={selected} className="overlay-img" />
+                </div>
+            )}
+            <div className="gallery-wrapper">
+                <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
+                    {horizontalGallery.map((src, i) => (
+                        <img className="image" onClick={() => setSelected(src)} src={src} key={i} draggable="false" />
+                    ))}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 
