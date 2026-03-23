@@ -1,10 +1,11 @@
 import './../styles.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { horizontalGallery } from '../components/DataTypes';
 // --- Momentum state (scroll wheel only) ---
 let velocity = 0;
 let percentage = 0;
 let animating = false;
+let hasMoved = false;
 
 const FRICTION = 0.95;
 const MIN_VELOCITY = 0.01;
@@ -51,6 +52,7 @@ function handleScroll(e: WheelEvent) {
 
 function Image_gallery() {
     const [selected, setSelected] = useState<string | null>(null);
+    const openedAt = useRef(0);
 
     useEffect(() => {
         document.title = "Gallery";
@@ -70,6 +72,7 @@ function Image_gallery() {
         let smoothedVelocity = 0;
 
         window.onpointerdown = (e: MouseEvent) => {
+            hasMoved = false;
             dragging = true;
             lastX = e.clientX;
             smoothedVelocity = 0;
@@ -92,6 +95,10 @@ function Image_gallery() {
 
             const dx = e.clientX - lastX;
             lastX = e.clientX;
+
+            if (Math.abs(dx) > 3) {
+                hasMoved = true;
+            }
 
             const trackWidth = track.scrollWidth;
             const delta = (dx / trackWidth) * 100 * 1.5;
@@ -117,14 +124,21 @@ function Image_gallery() {
     return (
         <>
             {selected && (
-                <div className="overlay" onClick={() => setSelected(null)}>
+                <div className="overlay" onClick={() => {
+                    if (Date.now() - openedAt.current > 300) setSelected(null);
+                }}>
                     <img src={selected} className="overlay-img" />
                 </div>
             )}
             <div className="gallery-wrapper">
                 <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
                     {horizontalGallery.map((src, i) => (
-                        <img className="image" onClick={() => setSelected(src)} src={src} key={i} draggable="false" />
+                        <img className="image" onPointerUp={() => {
+                            if (!hasMoved) {
+                                openedAt.current = Date.now();
+                                setSelected(src);
+                            }
+                        }} src={src} key={i} draggable="false" />
                     ))}
                 </div>
             </div>
