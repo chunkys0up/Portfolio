@@ -40,6 +40,27 @@ body {
   box-sizing: border-box;
 }
 
+h1 {
+  margin: 0;
+}
+
+.social-tags-container {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.social-tags,
+.social-tags:visited {
+  font-size: 0.8rem;
+  color: oklch(0.55 0 0);
+  margin: 0;
+  text-decoration: none;
+}
+
+.social-tags:hover {
+  text-decoration: underline;
+}
+
 section {
   margin-bottom: 30px;
 }

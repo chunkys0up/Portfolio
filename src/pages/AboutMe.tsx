@@ -9,9 +9,13 @@ function AboutMe() {
 
     return (
         <div className="portfolio-container">
-            <h1>Andrew Nguyen</h1>
-
             <section>
+                <h1>Andrew Nguyen</h1>
+
+                <p className="social-tags-container">
+                    <a className="social-tags" href="https://linkedin.com/in/" target="_blank">LinkedIn</a> · <a className="social-tags" href="https://github.com/" target="_blank">Github</a>
+                </p>
+
                 <p className="section-title">About</p>
                 <p className="sub-section">CS student at CSUF. I like building tools, competing in ICPC, and figuring out how systems work under the hood.</p>
             </section>
