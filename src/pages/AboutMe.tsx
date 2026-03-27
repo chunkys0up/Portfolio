@@ -13,7 +13,7 @@ function AboutMe() {
                 <h1>Andrew Nguyen</h1>
 
                 <p className="social-tags-container">
-                    <a className="social-tags" href="https://linkedin.com/in/" target="_blank">LinkedIn</a> · <a className="social-tags" href="https://github.com/" target="_blank">Github</a>
+                    <a className="social-tags" href="https://www.linkedin.com/in/andrewtnguyen49345/" target="_blank">LinkedIn</a> · <a className="social-tags" href="https://github.com/chunkys0up" target="_blank">Github</a>
                 </p>
 
                 <p className="section-title">About</p>
